@@ -1,6 +1,8 @@
 /* global console, process, YAML_SILENCE_WARNINGS */
 
-export function warn(warning, type) {
+declare const YAML_SILENCE_WARNINGS: string | undefined
+
+export function warn(warning: string | Error, type?: string) {
   if (typeof YAML_SILENCE_WARNINGS !== 'undefined' && YAML_SILENCE_WARNINGS)
     return
 

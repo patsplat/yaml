@@ -1,15 +1,15 @@
 import { parseDocs } from './compose/parse-docs.js'
-import { parse as parseCST } from './cst/parse.js'
 import { Document } from './doc/Document.js'
 import { YAMLSemanticError } from './errors.js'
+import { Options } from './options.js'
 import { warn } from './warnings.js'
 
 export { defaultOptions, scalarOptions } from './options.js'
-export { Document, parseCST }
+export { Document }
 
 export const parseAllDocuments = parseDocs
 
-export function parseDocument(src, options) {
+export function parseDocument(src: string, options?: Options) {
   const docs = parseDocs(src, options)
   if (docs.length > 1) {
     const errMsg =
@@ -19,7 +19,11 @@ export function parseDocument(src, options) {
   return docs[0]
 }
 
-export function parse(src, reviver, options) {
+export function parse(
+  src: string,
+  reviver?: (key: string, value: any) => any,
+  options?: Options
+) {
   if (options === undefined && reviver && typeof reviver === 'object') {
     options = reviver
     reviver = undefined
@@ -31,15 +35,19 @@ export function parse(src, reviver, options) {
   return doc.toJS({ reviver })
 }
 
-export function stringify(value, replacer, options) {
+export function stringify(
+  value: any,
+  replacer?: (key: string, value: any) => any,
+  options?: string | number | Options
+) {
   if (typeof options === 'string') options = options.length
   if (typeof options === 'number') {
     const indent = Math.round(options)
     options = indent < 1 ? undefined : indent > 8 ? { indent: 8 } : { indent }
   }
   if (value === undefined) {
-    const { keepUndefined } = options || replacer || {}
+    const { keepUndefined } = options || (replacer as Options) || {}
     if (!keepUndefined) return undefined
   }
-  return new Document(value, replacer, options).toString()
+  return new Document(value, replacer || null, options).toString()
 }
