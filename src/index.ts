@@ -11,6 +11,7 @@ export const parseAllDocuments = parseDocs
 
 export function parseDocument(src: string, options?: Options) {
   const docs = parseDocs(src, options)
+  if (docs.length === 0) return null
   if (docs.length > 1) {
     const errMsg =
       'Source contains multiple documents; please use YAML.parseAllDocuments()'
@@ -30,6 +31,7 @@ export function parse(
   }
 
   const doc = parseDocument(src, options)
+  if (!doc) return null
   doc.warnings.forEach(warning => warn(warning))
   if (doc.errors.length > 0) throw doc.errors[0]
   return doc.toJS({ reviver })
